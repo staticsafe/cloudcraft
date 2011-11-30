@@ -34,8 +34,6 @@ body {
 	width:660px;
 	float:left;
 }
-.main .entry {
-}
 .main .entry .title, .sub .title {
 	font-size:23px;
 }
@@ -52,7 +50,7 @@ body {
 	color:#7fff00;
 	border:1px solid #000000;
 	padding:5px 5px;
-	height:450px;
+	height:500px;
 }
 .prompt textarea {
 	background-color:#444444;
@@ -60,9 +58,7 @@ body {
 	width:300px;
 	resize:none;
 	outline:none;
-	position:absolute;
 	color:7fff00;
-	vertical-align:middle;
-	display:inline;
-	line-height:20px;
+	padding-top:470px;
+	overflow:hidden;	
 }
