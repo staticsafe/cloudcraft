@@ -1,6 +1,8 @@
 import subprocess
 import os
 import time
+import socketserver
+import socket
 
 def server_start(memory='1024M', jar='../minecraft/minecraft_server.jar', cwd='../minecraft/'):
     if os.path.isfile('../minecraft/server.log.lck'):
@@ -22,14 +24,16 @@ def server_comm(serverin):
     else:
         serverproc.communicate(serverin)
 
+serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serversocket.bind((socket.gethostname(), 8080))
+serversocket.listen(5)
+conn, addr = serversocket.accept()
+print('Connected by', addr)
+
 while True:
-    time.sleep(10)
-    while os.path.isfile('../web/php.lck'):
-        if os.path.isfile('communicate'):
-            file = open('communicate')
-            serverin = file.readline()
-            file.close()
-            server_comm(serverin)
-            os.remove('communicate')
-        else:
-            time.sleep(3)
+    data = conn.recv
+    if not data: break
+    conn.send(data)
+conn.close()
+    
+#while os.path.isfile('../web/php.lck') == True:
