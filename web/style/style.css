@@ -52,13 +52,21 @@ body {
 	padding:5px 5px;
 	height:500px;
 }
-.prompt textarea {
+.prompt #input {
 	background-color:#444444;
 	border:none;
 	width:300px;
 	resize:none;
 	outline:none;
-	color:7fff00;
-	padding-top:470px;
+	color:#7fff00;
 	overflow:hidden;	
+}
+.prompt #output {
+	background-color:#444444;
+	border:none;
+	width:300px;
+	resize:none;
+	height:460px;
+	outline:none;
+	color:#7fff00;
 }
