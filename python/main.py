@@ -1,6 +1,5 @@
 import subprocess
 import os
-import time
 import socket
 
 def server_start(memory='1024M', jar='../minecraft/minecraft_server.jar', cwd='../minecraft/'):
@@ -22,6 +21,8 @@ def server_comm(serverin):
         os.remove('../minecraft/server.log.lck')
     else:
         serverproc.communicate(serverin)
+
+command={'start':server_start(), 'terminate':serverproc.terminate()}
 
 while True:
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
