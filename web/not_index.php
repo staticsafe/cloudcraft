@@ -24,10 +24,10 @@
 		<?php
 			$comm = new communicate();
 			if(isset($_POST['start_server'])) {
-				$comm->start();
+				$comm->send("start");
 			}
 			elseif(isset($_POST['stop_server'])) {
-				$comm->stop();
+				$comm->send("stop");
 			}
 		?>
 		<div class="navigation">
@@ -50,9 +50,11 @@
 			</div><!-- main -->
 			<div class="sub">
 				<div class="prompt">
-					<textarea id="output" readonly="readonly">Rawr</textarea>
-					<textarea id="input">&gt; say hello</textarea>
+					<textarea id="output" readonly="readonly">Welcome to Hillting 0.0.0</textarea>
 				</div><!-- prompt -->
+				<div id="input">
+						<textarea id="user">Input Here</textarea>
+					</div>
 			</div><!-- sub -->
 		</div><!-- container -->
 	</body>

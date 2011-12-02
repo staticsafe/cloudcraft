@@ -1,17 +1,8 @@
 <?php
 	class communicate {
-		function start() {
+		function send($cmd) {
 			$this->connect();
-			$cmd = "start";
 			socket_send($this->socket, $cmd, strlen($cmd), MSG_DONTROUTE);
-			//$buf = socket_read($this->socket, 1024, PHP_NORMAL_READ);
-			//echo $buf;
-			$this->disconnect();
-		}
-		function stop() {
-			$this->connect();
-			$cmd = "stop";
-			socket_send($this->socket,$cmd,strlen($cmd),MSG_DONTROUTE);
 			//$buf = socket_read($this->socket, 1024, PHP_NORMAL_READ);
 			//echo $buf;
 			$this->disconnect();
@@ -23,7 +14,7 @@
 			socket_connect($this->socket, $this->address, $this->port);
 		}
 		function disconnect() {
-			socket_close($this->socket);
+			socket_shutdown($this->socket);
 		}
 	}
 ?>
