@@ -1,22 +1,30 @@
 from tkinter import *
 from tkinter.ttk import *
+import subprocess
 
 class Application(Frame):
-    def say_hi(self):
-        print("hi there, everyone!")
-
+    def start_server(self):
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = subprocess.SW_HIDE
+        server = ('python main.py')
+        try:
+            process = subprocess.Popen(server, startupinfo=startupinfo)
+        except:
+            return 'already running'
+        
     def createWidgets(self):
         self.QUIT = Button(self)
-        self.QUIT["text"] = "QUIT"
+        self.QUIT["text"] = "Quit"
         self.QUIT["command"] = self.quit
 
         self.QUIT.pack({"side": "left"})
 
-        self.hi_there = Button(self)
-        self.hi_there["text"] = "Hello",
-        self.hi_there["command"] = self.say_hi
+        self.start = Button(self)
+        self.start["text"] = "Start",
+        self.start["command"] = self.start_server
 
-        self.hi_there.pack({"side": "left"})
+        self.start.pack({"side": "left"})
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
