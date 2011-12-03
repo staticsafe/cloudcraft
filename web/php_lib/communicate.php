@@ -3,8 +3,7 @@
 		function send($cmd) {
 			$this->connect();
 			socket_send($this->socket, $cmd, strlen($cmd), MSG_DONTROUTE);
-			//$buf = socket_read($this->socket, 1024, PHP_NORMAL_READ);
-			//echo $buf;
+			$reply = socket_read($this->socket, 1024, PHP_NORMAL_READ);
 			$this->disconnect();
 		}
 		function connect() {
@@ -14,7 +13,7 @@
 			socket_connect($this->socket, $this->address, $this->port);
 		}
 		function disconnect() {
-			socket_shutdown($this->socket);
+			socket_close($this->socket);
 		}
 	}
 ?>
