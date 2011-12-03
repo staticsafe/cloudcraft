@@ -4,9 +4,8 @@ from os import path, remove, rename
 from urllib.request import urlretrieve
 from filecmp import cmp
 
-
 def server_start(memory='1024M', jar='../minecraft/minecraft_server.jar', cwd='../minecraft/'):
-    if path.isfile('../minecraft/server.log.lck'):
+    if serverproc:
         return 'already running'
     else:
         startupinfo = subprocess.STARTUPINFO()
@@ -15,22 +14,20 @@ def server_start(memory='1024M', jar='../minecraft/minecraft_server.jar', cwd='.
         executable = 'java -Xmx' + memory + ' -Xms' + memory + ' -jar ' + jar + ' nogui'
         global serverproc
         serverproc = subprocess.Popen(executable, cwd=cwd, startupinfo=startupinfo, stdin=subprocess.PIPE, universal_newlines=True)
-        
+        return 'Running'
 def server_comm(serverin):
     if (serverin == 'start'):
         server_start()
-        return 'success'
     elif (serverin == 'terminate'):
         if serverproc:
             serverproc.terminate()
             remove(cwd +'server.log.lck')
-            return 'success'
+            return 'Terminated'
         if not serverproc:
-            return 'failed'
-        return 'success'
+            return 'Server not running'
     elif (serverin == 'update'):
         if serverproc:
-            pass
+            return 'Please close before updating'
         if not serverproc:
             try:
                 newjar = urlretrieve('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
@@ -44,9 +41,9 @@ def server_comm(serverin):
     else:
         try:
             serverproc.communicate(serverin)
-            return 'success'
+            return 'sent'
         except NameError as error:
-            return 'failed'
+            return 'Server not running'
     
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.bind(('localhost', 1337))
