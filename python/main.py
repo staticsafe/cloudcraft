@@ -1,9 +1,9 @@
 import subprocess
 import socket
-from os import path, remove
+from os import path, remove, rename
 from urllib.request import urlretrieve
 from filecmp import cmp
-from shutil import copy
+
 
 def server_start(memory='1024M', jar='../minecraft/minecraft_server.jar', cwd='../minecraft/'):
     if path.isfile('../minecraft/server.log.lck'):
