@@ -1,10 +1,12 @@
 import subprocess
-import os
 import socket
-#import threading
+from os import path, remove
+from urllib.request import urlretrieve
+from filecmp import cmp
+from shutil import copy
 
 def server_start(memory='1024M', jar='../minecraft/minecraft_server.jar', cwd='../minecraft/'):
-    if os.path.isfile('../minecraft/server.log.lck'):
+    if path.isfile('../minecraft/server.log.lck'):
         return 'already running'
     else:
         startupinfo = subprocess.STARTUPINFO()
@@ -13,49 +15,55 @@ def server_start(memory='1024M', jar='../minecraft/minecraft_server.jar', cwd='.
         executable = 'java -Xmx' + memory + ' -Xms' + memory + ' -jar ' + jar + ' nogui'
         global serverproc
         serverproc = subprocess.Popen(executable, cwd=cwd, startupinfo=startupinfo, stdin=subprocess.PIPE, universal_newlines=True)
-        print('started')
-        return serverproc
         
 def server_comm(serverin):
     if (serverin == 'start'):
         server_start()
-        return 'works'
+        return 'success'
     elif (serverin == 'terminate'):
-        serverproc.terminate()
-        os.remove('../minecraft/server.log.lck')
-        return 'killed'
+        if serverproc:
+            serverproc.terminate()
+            remove(cwd +'server.log.lck')
+            return 'success'
+        if not serverproc:
+            return 'failed'
+        return 'success'
+    elif (serverin == 'update'):
+        if serverproc:
+            pass
+        if not serverproc:
+            try:
+                urlretrieve('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
+                if cmp('minecraft_server.jar', '../minecraft/minecraft_server.jar'):
+                    remove('minecraft_server.jar')
+                else:
+                    remove('../minecraft/minecraft_server.jar')
+                    copy('minecraft_server.jar', '../minecraft/minecraft_server.jar')
+                    remove('minecraft_server.jar')
+                    return 'success'
+            except: pass
     else:
         try:
             serverproc.communicate(serverin)
-            return 'sent'
+            return 'success'
         except NameError as error:
-            return 'Server not running'
-
-#command={'start':server_start(), 'terminate':serverproc.terminate()}
-
-
+            return 'failed'
+    
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 serversocket.bind(('localhost', 1337))
 serversocket.listen(5)
-print('listening')
 while True:
     connection, address = serversocket.accept()
-    print('connected by ', address)
     while True:
         serverin = connection.recv(128)
         if not serverin: break
         if serverin:
             serverin = serverin.decode('utf-8')
-            print(serverin)
             serverout = server_comm(serverin)
         if not serverout: break
         if serverout:
             try:
                 serverout = serverout + '\n'
-                print(serverout)
                 serverout = serverout.encode('utf-8')
                 connection.send(serverout)
-            except OSError as error:
-                print(error)
-                pass
+            except OSError as error: pass
