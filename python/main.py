@@ -33,15 +33,14 @@ def server_comm(serverin):
             pass
         if not serverproc:
             try:
-                urlretrieve('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
-                if cmp('minecraft_server.jar', '../minecraft/minecraft_server.jar'):
-                    remove('minecraft_server.jar')
+                newjar = urlretrieve('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
+                if cmp(newjar[0], jar):
+                    return 'No updated available'
                 else:
                     remove('../minecraft/minecraft_server.jar')
-                    copy('minecraft_server.jar', '../minecraft/minecraft_server.jar')
-                    remove('minecraft_server.jar')
-                    return 'success'
-            except: pass
+                    rename(newjar[0], '../minecraft/minecraft_server.jar')
+                    return 'Updated'
+            except: return 'minecraft.net down'
     else:
         try:
             serverproc.communicate(serverin)
