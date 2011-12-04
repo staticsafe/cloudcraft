@@ -7,24 +7,24 @@ from urllib.request import urlretrieve
 from filecmp import cmp
 
 def server_start():
-    if isfile(mcdir + 'server.log.lck'):
+    update_config()
+    if path.isfile(mcdir + 'server.log.lck'):
         return 'Already running'
     else:
-        if (os.name == 'nt'):
+        if (name == 'posix' or 'mac'):
+            startupinfo = None
+        if (name == 'nt'):
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             startupinfo.wShowWindow = subprocess.SW_HIDE
-        if (os.name == 'posix' or 'mac'):
-            startupinfo = None
-        update_config()
         executable = 'java -Xmx' + memory + ' -jar ' + mcdir + jar + ' nogui'
         global serverproc
         serverproc = subprocess.Popen(executable, cwd=mcdir, startupinfo=startupinfo, stdin=subprocess.PIPE, universal_newlines=True)
-        return 'Running'
     
 def server_comm(serverin):
     if (serverin == 'start'):
         server_start()
+        return 'Started'
     elif (serverin == 'terminate'):
         if serverproc:
             serverproc.terminate()
@@ -32,20 +32,19 @@ def server_comm(serverin):
             return 'Terminated'
         if not serverproc:
             return 'Server not running'
-##    elif (serverin == 'backup'):
-##        if serverproc:
-##            return 'Please close before backing up'
-##        if not serverproc:
-##            update_config()
-##            worlds = listdir(mcdir)
-##            try:
-##                for each world in worlds:
-##                    file.open(mcdir + world)
-##                    #currentmap = file.open(mcdir + '/world/')
-##                    backupfile = zipfile.ZipFile(backupdir + world + '.zip', mode='w', compression=ZIP_DEFLATED)
-##                    file.write(world)
-##                    file.close()
-##            except: return 'Backup Failed'              
+    elif (serverin == 'backup'):
+        if serverproc:
+            return 'Please close before backing up'
+        if not serverproc:
+            update_config()
+            worlds = listdir(mcdir)
+            try:
+                for world in worlds:
+                    file.open(mcdir + world)
+                    backupfile = zipfile.ZipFile(backupdir + world + '.zip', mode='w', compression=ZIP_DEFLATED)
+                    file.write(world)
+                    file.close()
+            except: return 'Backup Failed'              
     elif (serverin == 'update'):
         if serverproc:
             return 'Please close before updating'
@@ -64,7 +63,7 @@ def server_comm(serverin):
             except: return 'minecraft.net down'
     else:
         try:
-            serverproc.communicate(serverin)
+            serverproc.communicate(input=serverin)
             return 'Sent'
         except NameError as error:
             return 'Server not running'
@@ -73,10 +72,14 @@ def update_config():
     config = configparser.ConfigParser()
     config.read('config.ini')
     mcargs = config['mcargs']
+    global mcdir
+    global jar
+    global backupdir
+    global memory
     mcdir = mcargs['mcdir']
     jar = mcargs['jar']
-    backupdir = ['backupdir']
-    memory = ['memory']
+    backupdir = mcargs['backupdir']
+    memory = mcargs['memory']
     
 update_config()
 
