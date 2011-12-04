@@ -1,5 +1,6 @@
 import subprocess
 import socket
+import zipfile
 from os import path, remove, rename
 from urllib.request import urlretrieve
 from filecmp import cmp
@@ -25,6 +26,16 @@ def server_comm(serverin):
             return 'Terminated'
         if not serverproc:
             return 'Server not running'
+    elif (serverin == 'backup'):
+        if serverproc:
+            return 'Please close before backing up'
+        if not serverproc:
+            try:
+                currentmap = file.open('../minecraft/world/')
+                backupfile = zipfile.ZipFile('../backups/world.zip', mode='w', compression=ZIP_DEFLATED)
+                file.write(currentmap)
+                file.close()
+            except: return 'Backup Failed'              
     elif (serverin == 'update'):
         if serverproc:
             return 'Please close before updating'
