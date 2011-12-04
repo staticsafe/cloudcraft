@@ -35,13 +35,22 @@ body {
 	float:left;
 	background-color:#ffffff;
 }
+.main .entry { 
+	padding-bottom:20px;
+}
 .main .entry .title, .sub .title {
 	font-size:23px;
+	padding-bottom:9px;
 }
 .sub {
 	width:300px;
 	float:left;
 	margin-top:10px
+}
+.sub .server_status {
+	width:10px;
+	height:10px;
+	border-radius:20px;
 }
 .prompt {
 	background-color:#f3f3f3;
