@@ -20,7 +20,7 @@ def server_start():
         executable = 'java -Xmx' + memory + ' -jar ' + mcdir + jar + ' nogui'
         global serverproc
         serverproc = subprocess.Popen(executable, cwd=mcdir, startupinfo=startupinfo, stdin=subprocess.PIPE, universal_newlines=True)
-    
+        
 def server_comm(serverin):
     if (serverin == 'start'):
         server_start()
@@ -32,19 +32,12 @@ def server_comm(serverin):
             return 'Terminated'
         if not serverproc:
             return 'Server not running'
-    elif (serverin == 'backup'):
-        if serverproc:
-            return 'Please close before backing up'
-        if not serverproc:
-            update_config()
-            worlds = listdir(mcdir)
-            try:
-                for world in worlds:
-                    file.open(mcdir + world)
-                    backupfile = zipfile.ZipFile(backupdir + world + '.zip', mode='w', compression=ZIP_DEFLATED)
-                    file.write(world)
-                    file.close()
-            except: return 'Backup Failed'              
+    elif (serverin == 'backup'):	
+        backupfile = zipfile.ZipFile(backupdir + 'world.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
+        world = open('../minecraft/world/')
+        backupfile.write(world)
+        backupfile.close()
+        world.close()
     elif (serverin == 'update'):
         if serverproc:
             return 'Please close before updating'
@@ -80,7 +73,7 @@ def update_config():
     jar = mcargs['jar']
     backupdir = mcargs['backupdir']
     memory = mcargs['memory']
-    
+
 update_config()
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
