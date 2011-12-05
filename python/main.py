@@ -2,7 +2,7 @@ import subprocess
 import socket
 import zipfile
 import configparser
-from os import path, remove, rename, name, listdir
+from os import path, remove, rename, name
 from urllib.request import urlretrieve
 from filecmp import cmp
 
@@ -38,22 +38,22 @@ def server_comm(serverin):
         backupfile.write(world)
         backupfile.close()
         world.close()
+        return 'Backed Up'
     elif (serverin == 'update'):
-        if serverproc:
-            return 'Please close before updating'
-        if not serverproc:
-            update_config()
-            try:
-                if (jar == 'minecraft_server.jar'):
-                    newjar = urlretrieve('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
-                    if cmp(newjar[0], jar):
-                        return 'No update available'
-                    else:
-                        remove(mcdir + jar)
-                        rename(newjar[0], mcdir + jar)
-                        return 'Updated'
-                else: pass
-            except: return 'minecraft.net down'
+        update_config()
+        try:
+            if (jar == 'minecraft_server.jar'):
+                newjar = urlretrieve('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
+                if cmp(newjar[0], jar):
+                    return 'No update available'
+                else:
+                    try:
+                        serverproc.comm(stop)
+                    remove(mcdir + jar)
+                    rename(newjar[0], mcdir + jar)
+                    return 'Updated'
+            else: return 'bukkit support coming'
+        except: return 'minecraft.net down'
     else:
         try:
             serverproc.communicate(input=serverin)
