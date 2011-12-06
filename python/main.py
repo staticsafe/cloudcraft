@@ -49,9 +49,10 @@ def server_comm(serverin):
                 else:
                     try:
                         serverproc.comm(stop)
-                    remove(mcdir + jar)
-                    rename(newjar[0], mcdir + jar)
-                    return 'Updated'
+                    finally:   
+                        remove(mcdir + jar)
+                        rename(newjar[0], mcdir + jar)
+                        return 'Updated'
             else: return 'bukkit support coming'
         except: return 'minecraft.net down'
     else:
