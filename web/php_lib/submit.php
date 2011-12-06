@@ -39,9 +39,11 @@
 				$this->remove_from_file("../minecraft/banned-players.txt","banname",$all_lists["bannames_list"]);
 			}
 		}
-		function settings() {
+		function settings($properties) {
 			if(isset($_POST['submit_properties'])) {
-				
+				$props = file_get_contents("../minecraft/server.properties");
+				$this->properties = explode("\n",$props);
+				$this->submit_settings($properties);
 			}
 		}
 		function logs() {
@@ -50,7 +52,10 @@
 		function remove_from_file($file_name,$option,$list) {
 				$list = preg_grep('/^\s*\z/', $list, PREG_GREP_INVERT);
 				for($i =0; $i < count($list); $i++) {
-					if($list[$i] == $_POST['remove_choice_'.$option]) {
+					if(!isset($list[$i]) || $list[$i] == "") {
+						continue;
+					}
+					elseif($list[$i] == $_POST['remove_choice_'.$option]) {
 						unset($list[$i]);
 					}
 				}
@@ -62,6 +67,26 @@
 		function add_to_file($file_name,$option) {
 			$fop = fopen($file_name,"a");
 			fwrite($fop,$_POST[$option]."\n");
+		}
+		function submit_settings($properties) {
+			$this->all_settings = array();
+			for($i = 0; $i < count($this->properties); $i++) {
+				if(substr($this->properties[$i],0,1) == "#") {
+					$this->all_settings[$i] = $this->properties[$i];
+				}
+				else {
+					$epos = strpos($this->properties[$i],"=");
+					if(!isset($_POST[substr($this->properties[$i],0,$epos)])) {
+						$this->all_settings[$i] = $this->properties[$i];
+					}
+					else {
+						$this->all_settings[$i] = substr($this->properties[$i],0,$epos +1).$_POST[substr($this->properties[$i],0,$epos)];
+					}
+				}
+			}
+			$fop = fopen("../minecraft/server.properties","w");
+			$this->all_settings = implode("\n",$this->all_settings);
+			fwrite($fop,$this->all_settings);
 		}
 	}
 ?>

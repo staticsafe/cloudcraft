@@ -4,6 +4,9 @@ body {
 	font-family:verdana,sans-serif;
 	color:#333333;
 }
+input{
+	padding:3px 7px;
+}
 .navigation {
 	background-color:#f3f3f3;
 	border-bottom:1px solid #aaaaaa;

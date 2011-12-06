@@ -1,7 +1,3 @@
-<?php
-	include("./php_lib/minecraft_properties.php");
-	$mcp = new minecraft_properties();
-?>
 <div class="container">
 	<div class="main">
 		<div class="entry">
