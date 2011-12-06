@@ -5,7 +5,7 @@
 			$file = file_get_contents("../minecraft/server.log");
 			$file = explode("\n",$file);
 			for($i = 0; $i < count($file); $i++) {
-				echo $file[$i]."\n\n\n\n";
+				echo $file[$i]."\n";
 			}
 		?></textarea>
 		
