@@ -1,6 +1,6 @@
 Name "HillTing"
 OutFile "setup.exe"
-InstallDir "C:\Program Files\HillTing\"
+InstallDir "$PROGRAMFILES\HillTing\"
 RequestExecutionLevel Highest
 
 !include EnvVarUpdate.nsh
@@ -12,7 +12,7 @@ Page components
 Page directory
 Page instfiles
 
-Section "HillTing"
+Section "HillTing 0.1.0"
 CreateDirectory $INSTDIR
 SetOutPath $INSTDIR
 #move files in here on compile
@@ -20,13 +20,13 @@ File /r "web"
 File /r "python"
 SectionEnd
 
-Section "Apache"
+Section "Apache 2.2 + PHP 5.2.17"
 SetOutPath $INSTDIR
 File /r "Apache"
-${EnvVarUpdate} $0 "PATH" "A" "HKLM" "C:\Program Files\HillTing\apache\php"
+${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$PROGRAMFILES\HillTing\apache\php"
 SectionEnd
 
-Section "Python 3.2"
+Section "Python 3.2.2"
 SetOutPath "$TEMP\HILLTING"
 File python.msi
 ExecWait 'msiexec /i "$TEMP\HILLTING\python.msi"'
