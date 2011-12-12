@@ -2,11 +2,11 @@ import subprocess
 import socket
 import zipfile
 import configparser
+import time
 import psutil  # http://code.google.com/p/psutil/
 from os import path, remove, rename, name
 from urllib.request import urlretrieve
 from filecmp import cmp
-from time import wait
 
 def server_start():
     update_config()
@@ -15,7 +15,7 @@ def server_start():
     else:
         if (name == 'posix' or 'mac'):
             startupinfo = None
-        if (name == 'nt'):
+        elif (name == 'nt'):
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             startupinfo.wShowWindow = subprocess.SW_HIDE
@@ -33,6 +33,7 @@ def server_comm(serverin):
         if pid_man():
             oldpid.terminate()
             remove(mcdir +'server.log.lck')
+            remove('mc.pid')
             return 'Terminated'
         if pidman() == False:
             return 'Server not running'
@@ -45,27 +46,38 @@ def server_comm(serverin):
                     if cmp(newjar[0], jar):
                         return 'No update available'
                     else:
-                        try:
+                        if pid_man():
                             serverproc.comm("server going down for update")
-                            wait(15)
+                            time.wait(10)
                             serverproc.comm(stop)
                             remove(mcdir + jar)
                             rename(newjar[0], mcdir + jar)
+                            server_comm('start')
                             return 'Updated'
-                        except: return 'copy failed, try killing server'
+                        else:
+                            remove(mcdir + jar)
+                            rename(newjar[0], mcdir + jar)
+                            return 'Updated'
                 except:rename(newjar[0], mcdir + jar)
             except: return 'minecraft.net down'
         else: return 'bukkit support coming'
+	elif (serverin == 'destroy'):
+		remove('main.pid')
+		#kill self
+		pass  
     else:
         try:
             serverproc.communicate(input=serverin)
+            if serverin == 'stop':
+                remove('mc.pid')
+                return 'Stopped'
             return 'Sent'
         except NameError:
-            try:
-                if pid_man() == True:
-                    return 'Lost communication to server, try killing'
-                else:
-                    return 'Server not running'
+            if pid_man() == True:
+                return 'Lost communication to server, try killing'
+            else:
+                return 'Server not running'
+            
 
 def update_config():    
     config = configparser.ConfigParser()
@@ -83,13 +95,13 @@ def update_config():
 def pid_man(newpid=0):
     if newpid != 0:
         try:
-            remove('pid')
+            remove('mc.pid')
         except: pass
-        pidfile = open('pid', 'w')
+        pidfile = open('mc.pid', 'w')
         pidfile.write(newpid)
         pidfile.close()
     if newpid == 0:
-        pidfile = open('pid', 'r')
+        pidfile = open('mc.pid', 'r')
         global oldpid
         oldpid = int(pidfile.read())
         pidfile.close()
