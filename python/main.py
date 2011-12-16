@@ -61,10 +61,9 @@ def server_comm(serverin):
                 except:rename(newjar[0], mcdir + jar)
             except: return 'minecraft.net down'
         else: return 'bukkit support coming'
-	elif (serverin == 'destroy'):
-		remove('main.pid')
-		#kill self
-		pass  
+    elif (serverin == 'destroy'):
+        remove('main.pid') #kill self
+        pass  
     else:
         try:
             serverproc.communicate(input=serverin)
@@ -81,16 +80,18 @@ def server_comm(serverin):
 
 def update_config():    
     config = configparser.ConfigParser()
-    config.read('config.ini')
-    mcargs = config['mcargs']
-    global mcdir
-    global jar
-    global backupdir
-    global memory
-    mcdir = mcargs['mcdir']
-    jar = mcargs['jar']
-    backupdir = mcargs['backupdir']
-    memory = mcargs['memory']
+    try: 
+        config.read('config.ini')
+        mcargs = config['mcargs']
+        global mcdir
+        global jar
+        global backupdir
+        global memory
+        mcdir = mcargs['mcdir']
+        jar = mcargs['jar']
+        backupdir = mcargs['backupdir']
+        memory = mcargs['memory']
+    except: pass
 
 def pid_man(newpid=0):
     if newpid != 0:
