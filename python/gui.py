@@ -20,10 +20,11 @@ def web_stop():
     remove('apache\logs\httpd.pid')
 
 def main_start():
-    try: mainpid = subprocess.Popen('python main.py', stdin=subprocess.PIPE).pid
+    try: 
+        mainpid = subprocess.Popen('python main.py', stdin=subprocess.PIPE).pid
         pid_man('main', 'set', mainpid)
     except: pass #open popup
-    
+
 def main_stop():
     #if socket_comm('destroy') == False:
     main = pid_man('main', 'get')
@@ -39,7 +40,8 @@ def mc_start(): pass
 def mc_stop(): pass
 	# if socket_comm('stop') == False:
 	# 	mc = pid_man('mc', 'get')
-	# 	mc.terminate()
+    #   mcproc = psutil.Process(mc)
+	# 	mcproc.terminate()
 	# 	remove('mc.pid')
 
 def pid_man(program, task, pid=0):
@@ -125,8 +127,8 @@ startbutton.config(text='Start',command=main_start)
 stopbutton.config(text='Stop',command=main_stop)
 webstartbutton.config(text='Start',command=web_start)
 webstopbutton.config(text='Stop',command=web_stop)
-mcstartbutton.config(text='Start',command=mc_start)
-mcstopbutton.config(text='Stop',command=mc_stop)
+mcstartbutton.config(text='Not',command=mc_start)
+mcstopbutton.config(text='Implemented',command=mc_stop)
 
 menubar.add_cascade(label='File', menu=filemenu)
 filemenu.add_command(label='Quit', command=root.destroy)
