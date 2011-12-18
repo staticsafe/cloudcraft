@@ -18,7 +18,6 @@ def server_start():
         elif (name == 'nt'):
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            startupinfo.wShowWindow = subprocess.SW_HIDE
         executable = 'java -Xmx' + memory + ' -jar ' + mcdir + jar + ' nogui'
         global serverproc
         serverproc = subprocess.Popen(executable, cwd=mcdir, startupinfo=startupinfo, stdin=subprocess.PIPE, universal_newlines=True)
@@ -61,9 +60,6 @@ def server_comm(serverin):
                 except:rename(newjar[0], mcdir + jar)
             except: return 'minecraft.net down'
         else: return 'bukkit support coming'
-    elif (serverin == 'destroy'):
-        remove('main.pid') #kill self
-        pass  
     else:
         try:
             serverproc.communicate(input=serverin)
@@ -77,7 +73,6 @@ def server_comm(serverin):
             else:
                 return 'Server not running'
             
-
 def update_config():    
     config = configparser.ConfigParser()
     try: 
@@ -98,14 +93,17 @@ def pid_man(newpid=0):
         try:
             remove('mc.pid')
         except: pass
-        pidfile = open('mc.pid', 'w')
-        pidfile.write(newpid)
-        pidfile.close()
+        try:
+            pidfile = open('mc.pid', 'w')
+            pidfile.write(newpid)
+        except: return 'error writing pid'
+        finally: pidfile.close()
     if newpid == 0:
-        pidfile = open('mc.pid', 'r')
-        global oldpid
-        oldpid = int(pidfile.read())
-        pidfile.close()
+        try:
+            pidfile = open('mc.pid', 'r')
+            oldpid = int(pidfile.read())
+        except: pass
+        finally: pidfile.close()
         try:
             pidcheck = psutil.Process(oldpid)
             if (pidcheck.status) == 0:
