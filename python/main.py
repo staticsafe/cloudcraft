@@ -1,6 +1,5 @@
 import subprocess
 import socket
-import zipfile
 import configparser
 import time
 import psutil  # http://code.google.com/p/psutil/
@@ -18,7 +17,7 @@ def server_start():
         elif (name == 'nt'):
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        executable = 'java -Xmx' + memory + ' -jar ' + mcdir + jar + ' nogui'
+        executable = 'java -Xmx' + memory + ' -Xms' + memory +' -jar ' + mcdir + jar + ' nogui'
         global serverproc
         serverproc = subprocess.Popen(executable, cwd=mcdir, startupinfo=startupinfo, stdin=subprocess.PIPE, universal_newlines=True)
         newpid = serverproc.pid
@@ -96,14 +95,14 @@ def pid_man(newpid=0):
         try:
             pidfile = open('mc.pid', 'w')
             pidfile.write(newpid)
+            pidfile.close()
         except: return 'error writing pid'
-        finally: pidfile.close()
     if newpid == 0:
         try:
             pidfile = open('mc.pid', 'r')
             oldpid = int(pidfile.read())
+            pidfile.close()
         except: pass
-        finally: pidfile.close()
         try:
             pidcheck = psutil.Process(oldpid)
             if (pidcheck.status) == 0:
