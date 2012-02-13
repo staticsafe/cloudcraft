@@ -39,9 +39,17 @@ def server_comm(serverin):
         update_config()
         if (jar == 'minecraft_server.jar'):
             try:
+                currentdir = os.getcwd()
                 newjar = requests.get('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
+                file_name = "minecraft_server.jar"
+                os.mkdir(os.path.join(os.environ['HOME'], "temp")) # Makes temp directory for possible update
+                os.chdir(os.path.join(os.environ['HOME'], "temp"))
+                f = open(file_name, 'wb')
+                f.write(newjar.content)
+                f.close
+                os.chdir(currentdir)
                 try:
-                    if cmp(newjar.content, jar):
+                    if cmp(os.path.join(os.environ['HOME'], "temp", "minecraft_server.jar"), jar):
                         return 'No update available'
                     else:
                         if pid_man():
@@ -49,14 +57,18 @@ def server_comm(serverin):
                             time.wait(10)
                             serverproc.comm(stop)
                             remove(mcdir + jar)
-                            rename(newjar[0], mcdir + jar)
+                            rename(os.path.join(os.environ['HOME'], "temp", "minecraft_server.jar"), mcdir + jar)
+                            os.remove(os.path.join(os.environ['HOME'], "temp", "minecraft_server.jar")
+                            os.rmdir(os.path.join(os.environ['HOME'], "temp")
                             server_comm('start')
                             return 'Updated'
                         else:
                             remove(mcdir + jar)
-                            rename(newjar[0], mcdir + jar)
+                            rename(os.path.join(os.environ['HOME'], "temp", "minecraft_server.jar"), mcdir + jar)
+                            os.remove(os.path.join(os.environ['HOME'], "temp", "minecraft_server.jar")
+                            os.rmdir(os.path.join(os.environ['HOME'], "temp")
                             return 'Updated'
-                except:rename(newjar[0], mcdir + jar)
+                except:rename(os.path.join(os.environ['HOME'], "temp", "minecraft_server.jar"), mcdir + jar)
             except: return 'minecraft.net down'
         else: return 'bukkit support coming'
     else:
