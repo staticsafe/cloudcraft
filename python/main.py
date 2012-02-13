@@ -1,11 +1,11 @@
 import subprocess
 import socket
-import configparser
+import ConfigParser
 import time
 import psutil  # http://code.google.com/p/psutil/
 from os import path, remove, rename, name
-from urllib.request import urlretrieve
 from filecmp import cmp
+import requests
 
 def server_start():
     update_config()
@@ -39,9 +39,9 @@ def server_comm(serverin):
         update_config()
         if (jar == 'minecraft_server.jar'):
             try:
-                newjar = urlretrieve('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
+                newjar = requests.get('https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar')
                 try:
-                    if cmp(newjar[0], jar):
+                    if cmp(newjar.content, jar):
                         return 'No update available'
                     else:
                         if pid_man():
@@ -73,7 +73,7 @@ def server_comm(serverin):
                 return 'Server not running'
             
 def update_config():    
-    config = configparser.ConfigParser()
+    config = ConfigParser.ConfigParser()
     try: 
         config.read('config.ini')
         mcargs = config['mcargs']
